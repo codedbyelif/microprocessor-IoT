@@ -3,7 +3,14 @@
 
 int sayac = 0;
 
+void TMR0_IRQHandler(void) {
+	
+	if(TIMER_GetIntFlag(TIMER0) == 1) {
+		TIMER_ClearIntFlag(TIMER0);
+		PA0 = !PA0;
+	}
 
+}
 
 
 void TMR1_IRQHandler(void) {
@@ -13,55 +20,11 @@ void TMR1_IRQHandler(void) {
 	}
 	sayac++;
 	
-	if (sayac == 1) {
-		PA0 = 1;
-		
+	if (sayac == 2) {
+		PA1 = !PA1;
+		sayac = 0;
 	}
-	else if ( sayac == 2 )
-	{
-		PA0 = 0 ;
-		PA1= 1 ;
-	}
-	
-	else if (sayac ==3 )  {
-		PA1 = 0 ;
-		PA2= 1 ;
-	}
-	else if (sayac == 4 ){
-	PA2 = 0 ;
-		PA3  = 1;
-	}
-		
-	else if (sayac == 5 ){
-	
-	  PA3 = 0 ;
-		PA4 = 1;
-	
-	}
-		else if ( sayac == 6 )
-	{
-		PA4= 0 ;
-		PA3= 1 ;
-	}
-	
-	else if (sayac ==7)  {
-		PA3 = 0 ;
-		PA2= 1 ;
-	}
-	else if (sayac == 8 ){
-	PA2 = 0 ;
-		PA1  = 1;
-	}
-		
-	else if (sayac == 9 ){
-	 sayac = 0 ;
-	PA1= 0 ;
-		PA0 = 1;
-	
-	}
-	
 }
-
 
 
 
@@ -136,14 +99,12 @@ int main()
 		
 		GPIO_SetMode(PA, BIT0, GPIO_MODE_OUTPUT);
 		GPIO_SetMode(PA, BIT1, GPIO_MODE_OUTPUT);		
-	  GPIO_SetMode(PA, BIT2, GPIO_MODE_OUTPUT);		
-	  GPIO_SetMode(PA, BIT3, GPIO_MODE_OUTPUT);		
-	  GPIO_SetMode(PA, BIT4, GPIO_MODE_OUTPUT);		
-		PA0 = 0;
-		PA1 = 0;
-		PA2 = 0;
-		PA3 = 0;
-		PA4 = 0;
+	
+		TIMER_Open(TIMER0, TIMER_PERIODIC_MODE, 1);
+		TIMER_EnableInt(TIMER0);
+		NVIC_EnableIRQ(TMR0_IRQn);
+		TIMER_Start(TIMER0);
+	
 	
 		TIMER_Open(TIMER1, TIMER_PERIODIC_MODE, 1);
 		TIMER_EnableInt(TIMER1);
